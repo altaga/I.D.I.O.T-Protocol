@@ -135,9 +135,15 @@ export default function App() {
   const accelMinMax = getMinMax(accelArray);
   const gyroMinMax = getMinMax(gyroArray);
 
-  // Calculate chart width to show all points with proper spacing
-  const availableWidth = screenWidth - 80; // Account for container padding
-  const chartWidth = Math.max(availableWidth, (accelArray.length + 1) * 50);
+  // Calculate available width accounting for Y-axis labels (~60px)
+  const availableWidth = screenWidth - 80; // Total padding from container
+  const yAxisWidth = 60; // Space taken by Y-axis
+  const effectiveWidth = availableWidth - yAxisWidth;
+  
+  // Calculate proper spacing to show all points
+  const dataPoints = Math.max(accelArray.length, 1);
+  const pointSpacing = Math.max(40, Math.floor(effectiveWidth / (dataPoints + 1)));
+  const chartWidth = (dataPoints * pointSpacing) + yAxisWidth + 40;
 
   // Prepare data for LineChart (3 lines: X, Y, Z)
   const accelDataX = accelArray.map((item, idx) => ({
@@ -217,21 +223,22 @@ export default function App() {
             </View>
           </View>
           {accelDataX.length > 0 ? (
-            <View style={styles.chartWrapper}>
+            <View style={styles.chartContainer}>
               <ScrollView 
                 horizontal 
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingVertical: 5 }}
+                showsHorizontalScrollIndicator={true}
+                persistentScrollbar={true}
+                style={styles.chartScroll}
               >
                 <LineChart
                   data={accelDataX}
                   data2={accelDataY}
                   data3={accelDataZ}
                   width={chartWidth}
-                  height={170}
-                  spacing={45}
-                  initialSpacing={25}
-                  endSpacing={25}
+                  height={180}
+                  spacing={pointSpacing}
+                  initialSpacing={20}
+                  endSpacing={20}
                   noOfSections={4}
                   maxValue={accelMinMax.max}
                   mostNegativeValue={accelMinMax.min}
@@ -257,11 +264,12 @@ export default function App() {
                   xAxisThickness={1}
                   yAxisTextStyle={{ color: "#777", fontSize: 10 }}
                   xAxisLabelTextStyle={{ color: "#777", fontSize: 9 }}
+                  yAxisLabelWidth={55}
                   rulesColor="#252C34"
                   rulesType="solid"
-                  isAnimated
-                  animationDuration={200}
+                  isAnimated={false}
                   adjustToWidth={false}
+                  disableScroll={true}
                 />
               </ScrollView>
             </View>
@@ -289,21 +297,22 @@ export default function App() {
             </View>
           </View>
           {gyroDataX.length > 0 ? (
-            <View style={styles.chartWrapper}>
+            <View style={styles.chartContainer}>
               <ScrollView 
                 horizontal 
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingVertical: 5 }}
+                showsHorizontalScrollIndicator={true}
+                persistentScrollbar={true}
+                style={styles.chartScroll}
               >
                 <LineChart
                   data={gyroDataX}
                   data2={gyroDataY}
                   data3={gyroDataZ}
                   width={chartWidth}
-                  height={170}
-                  spacing={45}
-                  initialSpacing={25}
-                  endSpacing={25}
+                  height={180}
+                  spacing={pointSpacing}
+                  initialSpacing={20}
+                  endSpacing={20}
                   noOfSections={4}
                   maxValue={gyroMinMax.max}
                   mostNegativeValue={gyroMinMax.min}
@@ -329,11 +338,12 @@ export default function App() {
                   xAxisThickness={1}
                   yAxisTextStyle={{ color: "#777", fontSize: 10 }}
                   xAxisLabelTextStyle={{ color: "#777", fontSize: 9 }}
+                  yAxisLabelWidth={55}
                   rulesColor="#252C34"
                   rulesType="solid"
-                  isAnimated
-                  animationDuration={200}
+                  isAnimated={false}
                   adjustToWidth={false}
+                  disableScroll={true}
                 />
               </ScrollView>
             </View>
@@ -451,7 +461,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "500",
   },
-  chartWrapper: {
+  chartContainer: {
+    width: "100%",
+    height: 200,
+  },
+  chartScroll: {
     width: "100%",
   },
   noDataText: {
